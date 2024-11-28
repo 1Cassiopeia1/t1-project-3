@@ -1,0 +1,64 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          external:
+            client-id: ${CLIENT_ID:client_id}
+            client-secret: ${CLIENT_SECRET:client_secret}
+  config:
+    import: kafka.yml
+  application:
+    name: transaction_accept
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/transaction_accept}
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:password}
+    driverClassName: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    change-log: db/changelog/db.changelog-master.xml
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:tst}
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate.default_schema: ${DATABASE_SCHEMA:public}
+      jdbc.batch_size: ${DATASOURCE_BATCH_SIZE:50}
+      order_inserts: true
+      order_updates: true
+    show-sql: ${SHOW_SQL:false}
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}
+
+logging:
+  level:
+    ROOT: INFO
+    org.apache.kafka: ERROR
+    ru.t1.transaction.acceptation: DEBUG
+
+management:
+  endpoints:
+    enabled-by-default: false
+    web.exposure.include: health, prometheus
+  endpoint:
+    health.enabled: true
+    prometheus.enabled: true
+
+t1:
+  transaction-block:
+    number: 3
+    period: 20s
+server:
+  port: 8081
+
+token:
+  signing:
+    key: ${TOKEN_SECRET_KEY:53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855}
